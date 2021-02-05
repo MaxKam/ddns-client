@@ -6,7 +6,8 @@ import (
 	"net/http"
 )
 
-func getPublicIp(ip4Url, ip6Url string) (string, string) {
+// Function to get public IPv4 and IPv6 IPs of host
+func getPublicIP(ip4Url, ip6Url string) (string, string) {
 	// Get public IPv4 address of host
 	reqV4, _ := http.Get(ip4Url)
 	ipV4, _ := ioutil.ReadAll(reqV4.Body)
@@ -19,6 +20,6 @@ func getPublicIp(ip4Url, ip6Url string) (string, string) {
 }
 
 func main() {
-	ipV4, ipV6 := getPublicIp("https://api.ipify.org", "https://api6.ipify.org")
+	ipV4, ipV6 := getPublicIP("https://api.ipify.org", "https://api6.ipify.org")
 	fmt.Println(fmt.Sprintf("IPv4: %s \nIPv6: %s", ipV4, ipV6))
 }
