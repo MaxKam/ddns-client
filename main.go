@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -39,6 +41,40 @@ func getPublicIP(ip4Url, ip6Url string) (string, string) {
 	return string(ipV4), string(ipV6)
 }
 
+func getDomainIP(domain string) (string, string) {
+	// Will be used to return the resolved IPs of the domain. If domain not resolved and user wants to create new record,
+	// will return empty string so that public IPs of machine will be used for creating the record.
+	var ipV4, ipV6 string
+
+	ips, err := net.LookupIP(domain)
+	if err != nil {
+		fmt.Printf("Could not resolve IPs. Do you want to create DNS records for the domain: %s?\n(Yes/No)\n", domain)
+		var userInput string
+		fmt.Scanln(&userInput)
+
+		if userInput == "Yes" {
+			return ipV4, ipV6
+		}
+
+		fmt.Fprintf(os.Stderr, "Could not resolve IPs: %v\n", err)
+		os.Exit(1)
+
+	}
+
+	for _, ip := range ips {
+		ipString := ip.String()
+		if strings.Count(ipString, ":") < 2 {
+			ipV4 = ipString
+		} else if strings.Count(ipString, ":") >= 2 {
+			ipV6 = ipString
+		}
+
+	}
+
+	return ipV4, ipV6
+
+}
+
 func main() {
 	// Config setup
 	viper.SetConfigName("default") // config file name without extension
@@ -53,9 +89,11 @@ func main() {
 
 	publicIP4Url := viper.GetString("app.ip4Url")
 	publicIP6Url := viper.GetString("app.ip6Url")
+	domainName := viper.GetString("app.domainName")
 
 	// End config setup
 
 	ipV4, ipV6 := getPublicIP(publicIP4Url, publicIP6Url)
 	fmt.Println(fmt.Sprintf("IPv4: %s \nIPv6: %s", ipV4, ipV6))
+	domainIPv4, domainIPv6 := getDomainIP(domainName)
 }
