@@ -37,3 +37,26 @@ func TestGetPublicIP(t *testing.T) {
 	ts.Close()
 
 }
+
+func TestCompareIPsMatch(t *testing.T) {
+	publicIPv4, domainIPv4 := "192.168.1.1", "192.168.1.1"
+	publicIPv6, domainIPv6 := "2001:0db8:85a3:0000:0000:8a2e:0370:7334", "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+
+	resultIPv4, resultIPv6 := compareIPs(publicIPv4, domainIPv4, publicIPv6, domainIPv6)
+
+	if resultIPv4 != true && resultIPv6 != true {
+		t.Errorf("Failed to detect that public and domain IPs match")
+	}
+
+}
+
+func TestCompareIPsNotMatch(t *testing.T) {
+	publicIPv4, domainIPv4 := "192.168.1.1", "192.168.10.10"
+	publicIPv6, domainIPv6 := "2001:0db8:85a3:0000:0000:8a2e:0370:7334", "0000:0db8:85a3:0000:0000:8a2e:0370:0000"
+
+	resultIPv4, resultIPv6 := compareIPs(publicIPv4, domainIPv4, publicIPv6, domainIPv6)
+
+	if resultIPv4 != false && resultIPv6 != false {
+		t.Errorf("Failed to detect that public and domain IPs don't match")
+	}
+}
