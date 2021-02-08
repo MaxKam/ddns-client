@@ -96,8 +96,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	publicIP4Url := viper.GetString("app.ip4Url")
-	publicIP6Url := viper.GetString("app.ip6Url")
+	publicIP4Url := viper.GetString("app.publicIP4Url")
+	publicIP6Url := viper.GetString("app.publicIP6Url")
 	domainName := viper.GetString("app.domainName")
 
 	// End config setup
