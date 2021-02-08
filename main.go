@@ -75,6 +75,15 @@ func getDomainIP(domain string) (string, string) {
 
 }
 
+func compareIPs(publicIPv4, domainIPv4, publicIPv6, domainIPv6 string) (bool, bool) {
+	ip4AddressesMatch := publicIPv4 == domainIPv4
+
+	ip6AddressesMatch := publicIPv6 == domainIPv6
+
+	return ip4AddressesMatch, ip6AddressesMatch
+
+}
+
 func main() {
 	// Config setup
 	viper.SetConfigName("default") // config file name without extension
@@ -96,4 +105,5 @@ func main() {
 	ipV4, ipV6 := getPublicIP(publicIP4Url, publicIP6Url)
 	fmt.Println(fmt.Sprintf("IPv4: %s \nIPv6: %s", ipV4, ipV6))
 	domainIPv4, domainIPv6 := getDomainIP(domainName)
+	fmt.Println(compareIPs(ipV4, domainIPv4, ipV6, domainIPv6))
 }
