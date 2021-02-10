@@ -6,3 +6,6 @@ app:
 
   # Domain that will be queried and updated if local IP has changed
   domainName: "example.com"
+
+  # DNS Provider. Currently only supports "Google Cloud DNS"
+  dnsProvider: "Google Cloud DNS"
