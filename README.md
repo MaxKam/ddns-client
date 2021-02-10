@@ -3,5 +3,5 @@
 Work in progress
 
 ### TO DO:
--  [ ] Add support for Google Domains DNS
+-  [ x ] Add support for Google Cloud DNS
 -  [ ] Add support for AWS Route 53 
