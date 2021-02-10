@@ -69,7 +69,6 @@ func UpdateDNSRecord(projectName string, zoneName string, domainName string, pre
 		log.Fatal(err)
 	}
 
-	// TODO: Change code below to process the `resp` object:
 	log.Printf("Request to update DNS record %s (%s) with IP %s sent. Status: %s", domainName, ipType, newPublicIP, resp.Status)
 
 	time.Sleep(10 * time.Second)
