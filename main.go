@@ -85,7 +85,7 @@ func getDomainIP(domain string) (string, string) {
 
 }
 
-func compareIPs(publicIPv4, domainIPv4, publicIPv6, domainIPv6 string) (bool, bool) {
+func checkIPsMatch(publicIPv4, domainIPv4, publicIPv6, domainIPv6 string) (bool, bool) {
 	ip4AddressesMatch := publicIPv4 == domainIPv4
 
 	ip6AddressesMatch := publicIPv6 == domainIPv6
@@ -120,5 +120,5 @@ func main() {
 	ipInfo.domainIPv4, ipInfo.domainIPv6 = getDomainIP(ipInfo.domainName)
 
 	// Check if public and resolved IPs are the same
-	fmt.Println(compareIPs(ipInfo.publicIPv4, ipInfo.domainIPv4, ipInfo.publicIPv6, ipInfo.domainIPv6))
+	fmt.Println(checkIPsMatch(ipInfo.publicIPv4, ipInfo.domainIPv4, ipInfo.publicIPv6, ipInfo.domainIPv6))
 }
