@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
+	"log"
 	"net"
 	"net/http"
 	"os"
@@ -26,26 +26,22 @@ func getPublicIP(ip4Url, ip6Url string) (string, string) {
 	// Get public IPv4 address of host
 	reqV4, err := http.Get(ip4Url)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not get public IPv4 address: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("Could not get public IPv4 address: %v\n", err)
 	}
 
 	ipV4, err := ioutil.ReadAll(reqV4.Body)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not read public IPv4 response: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("Could not read public IPv4 response: %v\n", err)
 	}
 	// Get public IPv6 address of host
 	reqV6, err := http.Get(ip6Url)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not get public IPv6 address: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("Could not get public IPv6 address: %v\n", err)
 	}
 
 	ipV6, err := ioutil.ReadAll(reqV6.Body)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not read public IPv6 response: %v\n", err)
-		os.Exit(1)
+		log.Fatalf("Could not read public IPv6 response: %v\n", err)
 	}
 
 	return string(ipV4), string(ipV6)
@@ -58,17 +54,7 @@ func getDomainIP(domain string) (string, string) {
 
 	ips, err := net.LookupIP(domain)
 	if err != nil {
-		fmt.Printf("Could not resolve IPs. Do you want to create DNS records for the domain: %s?\n(Yes/No)\n", domain)
-		var userInput string
-		fmt.Scanln(&userInput)
-
-		if userInput == "Yes" {
-			return ipV4, ipV6
-		}
-
-		fmt.Fprintf(os.Stderr, "Could not resolve IPs: %v\n", err)
-		os.Exit(1)
-
+		log.Fatalf("Could not resolve IPs: %v\n", err)
 	}
 
 	for _, ip := range ips {
@@ -101,7 +87,7 @@ func main() {
 
 	err := viper.ReadInConfig()
 	if err != nil {
-		fmt.Println("Fatal error reading config file: default \n", err)
+		log.Fatal("Fatal error reading config file: default \n", err)
 		os.Exit(1)
 	}
 
@@ -114,11 +100,11 @@ func main() {
 
 	// Get public IPs of host
 	ipInfo.publicIPv4, ipInfo.publicIPv6 = getPublicIP(ipInfo.publicIP4Api, ipInfo.publicIP6Api)
-	fmt.Println(fmt.Sprintf("IPv4: %s \nIPv6: %s", ipInfo.publicIPv4, ipInfo.publicIPv6))
+	log.Printf("IPv4: %s \nIPv6: %s", ipInfo.publicIPv4, ipInfo.publicIPv6)
 
 	// Resolve IPs of provided domain
 	ipInfo.domainIPv4, ipInfo.domainIPv6 = getDomainIP(ipInfo.domainName)
 
 	// Check if public and resolved IPs are the same
-	fmt.Println(checkIPsMatch(ipInfo.publicIPv4, ipInfo.domainIPv4, ipInfo.publicIPv6, ipInfo.domainIPv6))
+	log.Println(ipInfo.publicIPv4, ipInfo.domainIPv4, ipInfo.publicIPv6, ipInfo.domainIPv6)
 }
