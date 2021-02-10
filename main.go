@@ -11,6 +11,16 @@ import (
 	"github.com/spf13/viper"
 )
 
+type ipData struct {
+	publicIP4Api string
+	publicIP6Api string
+	domainName   string
+	publicIPv4   string
+	publicIPv6   string
+	domainIPv4   string
+	domainIPv6   string
+}
+
 // Function to get public IPv4 and IPv6 IPs of host
 func getPublicIP(ip4Url, ip6Url string) (string, string) {
 	// Get public IPv4 address of host
@@ -87,7 +97,6 @@ func compareIPs(publicIPv4, domainIPv4, publicIPv6, domainIPv6 string) (bool, bo
 func main() {
 	// Config setup
 	viper.SetConfigName("default") // config file name without extension
-	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 
 	err := viper.ReadInConfig()
@@ -96,14 +105,20 @@ func main() {
 		os.Exit(1)
 	}
 
-	publicIP4Api := viper.GetString("app.publicIP4Api")
-	publicIP6Api := viper.GetString("app.publicIP6Api")
-	domainName := viper.GetString("app.domainName")
+	var ipInfo ipData
+	ipInfo.publicIP4Api = viper.GetString("app.publicIP4Api")
+	ipInfo.publicIP6Api = viper.GetString("app.publicIP6Api")
+	ipInfo.domainName = viper.GetString("app.domainName")
 
 	// End config setup
 
-	ipV4, ipV6 := getPublicIP(publicIP4Api, publicIP6Api)
-	fmt.Println(fmt.Sprintf("IPv4: %s \nIPv6: %s", ipV4, ipV6))
-	domainIPv4, domainIPv6 := getDomainIP(domainName)
-	fmt.Println(compareIPs(ipV4, domainIPv4, ipV6, domainIPv6))
+	// Get public IPs of host
+	ipInfo.publicIPv4, ipInfo.publicIPv6 = getPublicIP(ipInfo.publicIP4Api, ipInfo.publicIP6Api)
+	fmt.Println(fmt.Sprintf("IPv4: %s \nIPv6: %s", ipInfo.publicIPv4, ipInfo.publicIPv6))
+
+	// Resolve IPs of provided domain
+	ipInfo.domainIPv4, ipInfo.domainIPv6 = getDomainIP(ipInfo.domainName)
+
+	// Check if public and resolved IPs are the same
+	fmt.Println(compareIPs(ipInfo.publicIPv4, ipInfo.domainIPv4, ipInfo.publicIPv6, ipInfo.domainIPv6))
 }
