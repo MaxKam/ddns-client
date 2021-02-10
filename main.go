@@ -96,6 +96,12 @@ func main() {
 	ipInfo.publicIP6Api = viper.GetString("app.publicIP6Api")
 	ipInfo.domainName = viper.GetString("app.domainName")
 
+	gcpInfo := &gcpData{
+		projectName: viper.GetString("gcpDNS.projectName"),
+		zoneName:    viper.GetString("gcpDNS.zoneName"),
+		ttlValue:    viper.GetInt64("gcpDNS.ttlValue"),
+	}
+
 	// End config setup
 
 	// Get public IPs of host
@@ -106,5 +112,18 @@ func main() {
 	ipInfo.domainIPv4, ipInfo.domainIPv6 = getDomainIP(ipInfo.domainName)
 
 	// Check if public and resolved IPs are the same
-	log.Println(ipInfo.publicIPv4, ipInfo.domainIPv4, ipInfo.publicIPv6, ipInfo.domainIPv6)
+	IPv4Same, IPv6Same := checkIPsMatch(ipInfo.publicIPv4, ipInfo.domainIPv4, ipInfo.publicIPv6, ipInfo.domainIPv6)
+
+	if IPv4Same == false {
+		UpdateDNSRecord(gcpInfo.projectName, gcpInfo.zoneName, ipInfo.domainName, ipInfo.domainIPv4, ipInfo.publicIPv4, gcpInfo.ttlValue)
+	} else {
+		log.Println("Public IPv4 address has not changed.")
+	}
+
+	if IPv6Same == false {
+		UpdateDNSRecord(gcpInfo.projectName, gcpInfo.zoneName, ipInfo.domainName, ipInfo.domainIPv6, ipInfo.publicIPv6, gcpInfo.ttlValue)
+	} else {
+		log.Println("Public IPv6 address has not changed.")
+	}
+
 }
