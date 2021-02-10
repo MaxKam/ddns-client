@@ -9,3 +9,11 @@ app:
 
   # DNS Provider. Currently only supports "Google Cloud DNS"
   dnsProvider: "Google Cloud DNS"
+
+gcpDNS:
+  # Name of GCP project
+  projectName: "" 
+  # Name or ID of GCP DNS managed zone
+  zoneName: ""
+  # Time to live - amount of time for DNS record to be cached - value is in seconds and must be an integer
+  ttlValue: 300 

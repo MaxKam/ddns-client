@@ -82,7 +82,9 @@ func checkIPsMatch(publicIPv4, domainIPv4, publicIPv6, domainIPv6 string) (bool,
 
 func main() {
 	// Config setup
-	viper.SetConfigName("default") // config file name without extension
+	viper.SetConfigName("ddns_client_config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("$HOME/.config/ddnsclient/")
 	viper.AddConfigPath(".")
 
 	err := viper.ReadInConfig()
@@ -104,9 +106,11 @@ func main() {
 
 	// End config setup
 
+	log.Println("Dynamic DNS client - Starting check of public IPs")
+
 	// Get public IPs of host
 	ipInfo.publicIPv4, ipInfo.publicIPv6 = getPublicIP(ipInfo.publicIP4Api, ipInfo.publicIP6Api)
-	log.Printf("IPv4: %s \nIPv6: %s", ipInfo.publicIPv4, ipInfo.publicIPv6)
+	log.Printf("Hosts public IPv4: %s and\nIPv6: %s", ipInfo.publicIPv4, ipInfo.publicIPv6)
 
 	// Resolve IPs of provided domain
 	ipInfo.domainIPv4, ipInfo.domainIPv6 = getDomainIP(ipInfo.domainName)
@@ -125,5 +129,7 @@ func main() {
 	} else {
 		log.Println("Public IPv6 address has not changed.")
 	}
+
+	os.Exit(0)
 
 }
