@@ -96,13 +96,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	publicIP4Url := viper.GetString("app.publicIP4Url")
-	publicIP6Url := viper.GetString("app.publicIP6Url")
+	publicIP4Api := viper.GetString("app.publicIP4Api")
+	publicIP6Api := viper.GetString("app.publicIP6Api")
 	domainName := viper.GetString("app.domainName")
 
 	// End config setup
 
-	ipV4, ipV6 := getPublicIP(publicIP4Url, publicIP6Url)
+	ipV4, ipV6 := getPublicIP(publicIP4Api, publicIP6Api)
 	fmt.Println(fmt.Sprintf("IPv4: %s \nIPv6: %s", ipV4, ipV6))
 	domainIPv4, domainIPv6 := getDomainIP(domainName)
 	fmt.Println(compareIPs(ipV4, domainIPv4, ipV6, domainIPv6))

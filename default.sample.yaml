@@ -1,8 +1,8 @@
 app:
   # URLs for public IP API. One for IPv4 and IPv6 addresses
   # Must return IP as string in body of response
-  publicIP4Url: "https://api.ipify.org"
-  publicIP6Url: "https://api6.ipify.org"
+  publicIP4Api: "https://api.ipify.org"
+  publicIP6Api: "https://api6.ipify.org"
 
   # Domain that will be queried and updated if local IP has changed
   domainName: "example.com"
