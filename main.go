@@ -82,12 +82,22 @@ func checkIPsMatch(publicIPv4, domainIPv4, publicIPv6, domainIPv6 string) (bool,
 
 func main() {
 	// Config setup
+	var err error
+	// log setup
+	logFile, err := os.OpenFile("ddnsclient_logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.SetOutput(logFile)
+	// end log setup
+
 	viper.SetConfigName("ddns_client_config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("/opt/ddnsclient/config/")
 	viper.AddConfigPath(".")
 
-	err := viper.ReadInConfig()
+	err = viper.ReadInConfig()
 	if err != nil {
 		log.Fatal("Fatal error reading config file: default \n", err)
 		os.Exit(1)
