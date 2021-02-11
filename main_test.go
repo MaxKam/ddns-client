@@ -60,3 +60,23 @@ func TestCheckIPsMatchFalse(t *testing.T) {
 		t.Errorf("Failed to detect that public and domain IPs don't match")
 	}
 }
+
+func TestGetIPTypeIPv4(t *testing.T) {
+	ipv4Address := "192.168.1.1"
+
+	result := getIPType(ipv4Address)
+
+	if result != "A" {
+		t.Errorf("Address not detected as IPv4")
+	}
+}
+
+func TestGetIPTypeIPv6(t *testing.T) {
+	ipv4Address := "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+
+	result := getIPType(ipv4Address)
+
+	if result != "AAAA" {
+		t.Errorf("Address not detected as IPv6")
+	}
+}
