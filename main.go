@@ -84,7 +84,7 @@ func main() {
 	// Config setup
 	viper.SetConfigName("ddns_client_config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath("/etc/ddnsclient")
+	viper.AddConfigPath("/opt/ddnsclient/config/")
 	viper.AddConfigPath(".")
 
 	err := viper.ReadInConfig()
