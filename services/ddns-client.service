@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=oneshot
 User=ddns-client
-WorkingDirectory=/opt/ddns-client/ddns-client-Linux-x64
+WorkingDirectory=/opt/ddns-client/
 ExecStart=/opt/ddns-client/ddns-client-Linux-x64
 Restart=no
 RemainAfterExit=yes
