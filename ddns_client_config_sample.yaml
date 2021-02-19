@@ -10,6 +10,12 @@ app:
   # DNS Provider. Currently only supports "Google Cloud DNS"
   dnsProvider: "Google Cloud DNS"
 
+  # If you want the app to write all messages to a separate log file, write "logfile". Otherwise leave blank to use systemd's journal. 
+  # If logfile, then add the file path to logLocation.
+  logOutput:
+  logLocation:
+
+
 gcpDNS:
   # Name of GCP project
   projectName: "" 

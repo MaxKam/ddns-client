@@ -83,14 +83,6 @@ func checkIPsMatch(publicIPv4, domainIPv4, publicIPv6, domainIPv6 string) (bool,
 func main() {
 	// Config setup
 	var err error
-	// log setup
-	logFile, err := os.OpenFile("/var/log/ddnsclient_logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.SetOutput(logFile)
-	// end log setup
 
 	viper.SetConfigName("ddns_client_config")
 	viper.SetConfigType("yaml")
@@ -102,6 +94,16 @@ func main() {
 		log.Fatal("Fatal error reading config file: default \n", err)
 		os.Exit(1)
 	}
+
+	// log setup
+	if viper.GetString("app.logOutput") == "logfile" {
+		logFile, err := os.OpenFile(viper.GetString("app.logLocation"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.SetOutput(logFile)
+	}
+	// end log setup
 
 	var ipInfo ipData
 	ipInfo.publicIP4Api = viper.GetString("app.publicIP4Api")
