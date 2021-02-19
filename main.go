@@ -84,7 +84,7 @@ func main() {
 	// Config setup
 	var err error
 
-	viper.SetConfigName("ddns_client_config")
+	viper.SetConfigName("ddns-client-config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("/etc")
