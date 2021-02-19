@@ -1,0 +1,10 @@
+[Unit]
+Description=Dynamic DNS Client Utility
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=8h
+Unit=ddns-client.service
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,15 @@
+[Unit]
+Description=Dynamic DNS Client Utility
+After=network.target
+
+[Service]
+Type=oneshot
+User=ddns-client
+WorkingDirectory=/opt/ddns-client/ddns-client-Linux-x64
+ExecStart=/opt/ddns-client/ddns-client-Linux-x64
+Restart=no
+RemainAfterExit=yes
+
+
+[Install]
+WantedBy=multi-user.target
