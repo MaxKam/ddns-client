@@ -84,7 +84,7 @@ func main() {
 	// Config setup
 	var err error
 	// log setup
-	logFile, err := os.OpenFile("ddnsclient_logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	logFile, err := os.OpenFile("/var/log/ddnsclient_logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -95,6 +95,7 @@ func main() {
 	viper.SetConfigName("ddns_client_config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
+	viper.AddConfigPath("/etc")
 
 	err = viper.ReadInConfig()
 	if err != nil {
