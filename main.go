@@ -48,8 +48,6 @@ func getPublicIP(ip4Url, ip6Url string) (string, string) {
 }
 
 func getDomainIP(domain string) (string, string) {
-	// Will be used to return the resolved IPs of the domain. If domain not resolved and user wants to create new record,
-	// will return empty string so that public IPs of machine will be used for creating the record.
 	var ipV4, ipV6 string
 
 	ips, err := net.LookupIP(domain)
@@ -66,7 +64,6 @@ func getDomainIP(domain string) (string, string) {
 		}
 
 	}
-
 	return ipV4, ipV6
 
 }
