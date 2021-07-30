@@ -127,13 +127,15 @@ func main() {
 	// Check if public and resolved IPs are the same
 	IPv4Same, IPv6Same := checkIPsMatch(ipInfo.publicIPv4, ipInfo.domainIPv4, ipInfo.publicIPv6, ipInfo.domainIPv6)
 
-	if IPv4Same == false {
+	if !IPv4Same {
+		log.Println("Public IPv4 address has changed. Updating DNS record")
 		UpdateDNSRecord(gcpInfo.projectName, gcpInfo.zoneName, ipInfo.domainName, ipInfo.domainIPv4, ipInfo.publicIPv4, gcpInfo.ttlValue)
 	} else {
 		log.Println("Public IPv4 address has not changed.")
 	}
 
-	if IPv6Same == false {
+	if !IPv6Same {
+		log.Println("Public IPv6 address has changed. Updating DNS record")
 		UpdateDNSRecord(gcpInfo.projectName, gcpInfo.zoneName, ipInfo.domainName, ipInfo.domainIPv6, ipInfo.publicIPv6, gcpInfo.ttlValue)
 	} else {
 		log.Println("Public IPv6 address has not changed.")
