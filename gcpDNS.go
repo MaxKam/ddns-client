@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/dns/v1"
 )
 
@@ -19,12 +18,8 @@ type gcpData struct {
 // UpdateDNSRecord will update the DNS record in a Google Cloud DNS Managed Zone.
 func UpdateDNSRecord(projectName string, zoneName string, domainName string, previousIP string, newPublicIP string, ttlValue int64) {
 	ctx := context.Background()
-	c, err := google.DefaultClient(ctx, dns.CloudPlatformScope)
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	dnsService, err := dns.New(c)
+	dnsService, err := dns.NewService(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
