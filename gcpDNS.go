@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"strings"
 	"time"
 
 	"golang.org/x/net/context"
@@ -16,7 +15,18 @@ type gcpData struct {
 }
 
 // UpdateDNSRecord will update the DNS record in a Google Cloud DNS Managed Zone.
-func UpdateDNSRecord(projectName string, zoneName string, domainName string, previousIP string, newPublicIP string, ttlValue int64) {
+func UpdateDNSRecord(ipInfo *ipData, gcpInfo *gcpData, ipType string) {
+	var newPublicIP string
+	var previousIP string
+
+	if ipType == "A" {
+		newPublicIP = ipInfo.publicIPv4
+		previousIP = ipInfo.domainIPv4
+	} else if ipType == "AAAA" {
+		newPublicIP = ipInfo.publicIPv6
+		previousIP = ipInfo.domainIPv6
+	}
+
 	ctx := context.Background()
 
 	dnsService, err := dns.NewService(ctx)
@@ -24,9 +34,8 @@ func UpdateDNSRecord(projectName string, zoneName string, domainName string, pre
 		log.Fatal(err)
 	}
 
-	ipType := getIPType(newPublicIP)
 	// GCP requires that the domain name be fully qualified, i.e. includes a period at the end for the root zone
-	domainName = domainName + "."
+	domainName := ipInfo.domainName + "."
 
 	addResource := &dns.ResourceRecordSet{
 		Kind: "dns#resourceRecordSet",
@@ -34,7 +43,7 @@ func UpdateDNSRecord(projectName string, zoneName string, domainName string, pre
 		Rrdatas: []string{
 			newPublicIP,
 		},
-		Ttl:  ttlValue,
+		Ttl:  gcpInfo.ttlValue,
 		Type: ipType,
 	}
 
@@ -44,7 +53,7 @@ func UpdateDNSRecord(projectName string, zoneName string, domainName string, pre
 		Rrdatas: []string{
 			previousIP,
 		},
-		Ttl:  ttlValue,
+		Ttl:  gcpInfo.ttlValue,
 		Type: ipType,
 	}
 
@@ -59,7 +68,7 @@ func UpdateDNSRecord(projectName string, zoneName string, domainName string, pre
 		Kind:      "dns#change",
 	}
 
-	resp, err := dnsService.Changes.Create(projectName, zoneName, rb).Context(ctx).Do()
+	resp, err := dnsService.Changes.Create(gcpInfo.projectName, gcpInfo.zoneName, rb).Context(ctx).Do()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -68,21 +77,11 @@ func UpdateDNSRecord(projectName string, zoneName string, domainName string, pre
 
 	time.Sleep(10 * time.Second)
 
-	getStatus, err := dnsService.Changes.Get(projectName, zoneName, resp.Id).Context(ctx).Do()
+	getStatus, err := dnsService.Changes.Get(gcpInfo.projectName, gcpInfo.zoneName, resp.Id).Context(ctx).Do()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	log.Printf("Status of request to update DNS record %s (%s): %s", domainName, ipType, getStatus.Status)
 
-}
-
-func getIPType(inputIP string) string {
-	ipType := ""
-	if strings.Count(inputIP, ":") < 2 {
-		ipType = "A"
-	} else if strings.Count(inputIP, ":") >= 2 {
-		ipType = "AAAA"
-	}
-	return ipType
 }
