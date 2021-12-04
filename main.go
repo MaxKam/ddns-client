@@ -129,14 +129,14 @@ func main() {
 
 	if !IPv4Same {
 		log.Println("Public IPv4 address has changed. Updating DNS record")
-		UpdateDNSRecord(gcpInfo.projectName, gcpInfo.zoneName, ipInfo.domainName, ipInfo.domainIPv4, ipInfo.publicIPv4, gcpInfo.ttlValue)
+		UpdateDNSRecord(&ipInfo, gcpInfo, "A")
 	} else {
 		log.Println("Public IPv4 address has not changed.")
 	}
 
 	if !IPv6Same {
 		log.Println("Public IPv6 address has changed. Updating DNS record")
-		UpdateDNSRecord(gcpInfo.projectName, gcpInfo.zoneName, ipInfo.domainName, ipInfo.domainIPv6, ipInfo.publicIPv6, gcpInfo.ttlValue)
+		UpdateDNSRecord(&ipInfo, gcpInfo, "A")
 	} else {
 		log.Println("Public IPv6 address has not changed.")
 	}
