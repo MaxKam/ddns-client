@@ -22,7 +22,7 @@ jobs:
       run: |
         cp ./services/ddns-client.service ./
         cp ./services/ddns-client.timer ./
-        tar -cvzf ddns-client-Linux-x64 ddns-client.service ddns-client.timer ddns-client-config-sample.yaml 
+        tar -cvzf ddns-client-Linux-x64.tar.gz ddns-client.service ddns-client.timer ddns-client-config-sample.yaml ddns-client-Linux-x64
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
