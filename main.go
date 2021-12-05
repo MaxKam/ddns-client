@@ -136,7 +136,7 @@ func main() {
 
 	if !IPv6Same {
 		log.Println("Public IPv6 address has changed. Updating DNS record")
-		UpdateDNSRecord(&ipInfo, gcpInfo, "A")
+		UpdateDNSRecord(&ipInfo, gcpInfo, "AAAA")
 	} else {
 		log.Println("Public IPv6 address has not changed.")
 	}
