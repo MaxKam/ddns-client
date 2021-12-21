@@ -8,4 +8,6 @@ Work in progress
 
 - [ ] Create certbot auto renew systemd file, along with save credentials somewhere
 - [ ] Create auto unseal vault script
+- [ ] Add auth method to vault
 - [ ] Add Vault config and code to ddns-client
+
