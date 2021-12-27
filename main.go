@@ -141,6 +141,8 @@ func main() {
 		log.Println("Public IPv6 address has not changed.")
 	}
 
+	log.Println("Dynamic DNS client finished run. Exiting.")
+
 	os.Exit(0)
 
 }
