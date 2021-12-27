@@ -11,7 +11,7 @@ app:
   dnsProvider: "Google Cloud DNS"
 
   # If you want the app to write all messages to a separate log file, write "logfile". Otherwise leave blank to use systemd's journal. 
-  # If logfile, then add the file path to logLocation.
+  # If logfile, then add the file path, including file name, to logLocation.
   logOutput:
   logLocation:
 
