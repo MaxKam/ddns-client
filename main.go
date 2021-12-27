@@ -21,7 +21,7 @@ type ipData struct {
 	domainIPv6   string
 }
 
-// Function to get public IPv4 and IPv6 IPs of host
+// getPublicIP returns public IPv4 and IPv6 IPs of host.
 func getPublicIP(ip4Url, ip6Url string) (string, string) {
 	// Get public IPv4 address of host
 	reqV4, err := http.Get(ip4Url)
@@ -47,6 +47,7 @@ func getPublicIP(ip4Url, ip6Url string) (string, string) {
 	return string(ipV4), string(ipV6)
 }
 
+// getDomainIP returns the A and AAAA records for a provided domain.
 func getDomainIP(domain string) (string, string) {
 	var ipV4, ipV6 string
 
@@ -68,6 +69,7 @@ func getDomainIP(domain string) (string, string) {
 
 }
 
+// checkIPsMatch returns if two IP addresses match.
 func checkIPsMatch(publicIPv4, domainIPv4, publicIPv6, domainIPv6 string) (bool, bool) {
 	ip4AddressesMatch := publicIPv4 == domainIPv4
 
@@ -92,7 +94,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	// log setup
+	// setup logfile if logOutput is set to logfile, otherwise by default with use Journald.
 	if viper.GetString("app.logOutput") == "logfile" {
 		logFile, err := os.OpenFile(viper.GetString("app.logLocation"), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
