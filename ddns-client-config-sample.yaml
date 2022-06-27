@@ -1,4 +1,7 @@
 app:
+  # Boolean option if app should check for IPv6 address
+  ipv6Enabled: #true or false
+  
   # URLs for public IP API. One for IPv4 and IPv6 addresses
   # Must return IP as string in body of response
   publicIP4Api: "https://api.ipify.org"

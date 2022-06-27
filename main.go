@@ -1,82 +1,17 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
-	"net"
-	"net/http"
 	"os"
-	"strings"
 
 	"github.com/spf13/viper"
 )
 
 type ipData struct {
-	publicIP4Api string
-	publicIP6Api string
-	domainName   string
-	publicIPv4   string
-	publicIPv6   string
-	domainIPv4   string
-	domainIPv6   string
-}
-
-// getPublicIP returns public IPv4 and IPv6 IPs of host.
-func getPublicIP(ip4Url, ip6Url string) (string, string) {
-	// Get public IPv4 address of host
-	reqV4, err := http.Get(ip4Url)
-	if err != nil {
-		log.Fatalf("Could not get public IPv4 address: %v\n", err)
-	}
-
-	ipV4, err := ioutil.ReadAll(reqV4.Body)
-	if err != nil {
-		log.Fatalf("Could not read public IPv4 response: %v\n", err)
-	}
-	// Get public IPv6 address of host
-	reqV6, err := http.Get(ip6Url)
-	if err != nil {
-		log.Fatalf("Could not get public IPv6 address: %v\n", err)
-	}
-
-	ipV6, err := ioutil.ReadAll(reqV6.Body)
-	if err != nil {
-		log.Fatalf("Could not read public IPv6 response: %v\n", err)
-	}
-
-	return string(ipV4), string(ipV6)
-}
-
-// getDomainIP returns the A and AAAA records for a provided domain.
-func getDomainIP(domain string) (string, string) {
-	var ipV4, ipV6 string
-
-	ips, err := net.LookupIP(domain)
-	if err != nil {
-		log.Fatalf("Could not resolve IPs: %v\n", err)
-	}
-
-	for _, ip := range ips {
-		ipString := ip.String()
-		if strings.Count(ipString, ":") < 2 {
-			ipV4 = ipString
-		} else if strings.Count(ipString, ":") >= 2 {
-			ipV6 = ipString
-		}
-
-	}
-	return ipV4, ipV6
-
-}
-
-// checkIPsMatch returns if two IP addresses match.
-func checkIPsMatch(publicIPv4, domainIPv4, publicIPv6, domainIPv6 string) (bool, bool) {
-	ip4AddressesMatch := publicIPv4 == domainIPv4
-
-	ip6AddressesMatch := publicIPv6 == domainIPv6
-
-	return ip4AddressesMatch, ip6AddressesMatch
-
+	publicIPApi string
+	domainName  string
+	publicIP    string
+	domainIP    string
 }
 
 func main() {
@@ -104,10 +39,9 @@ func main() {
 	}
 	// end log setup
 
-	var ipInfo ipData
-	ipInfo.publicIP4Api = viper.GetString("app.publicIP4Api")
-	ipInfo.publicIP6Api = viper.GetString("app.publicIP6Api")
-	ipInfo.domainName = viper.GetString("app.domainName")
+	var ipv4Info ipData
+	ipv4Info.publicIPApi = viper.GetString("app.publicIP4Api")
+	ipv4Info.domainName = viper.GetString("app.domainName")
 
 	gcpInfo := &gcpData{
 		projectName: viper.GetString("gcpDNS.projectName"),
@@ -117,30 +51,51 @@ func main() {
 
 	// End config setup
 
-	log.Println("Dynamic DNS client - Starting check of public IPs")
+	log.Println("Dynamic DNS client - Starting check of public IPv4 address")
 
-	// Get public IPs of host
-	ipInfo.publicIPv4, ipInfo.publicIPv6 = getPublicIP(ipInfo.publicIP4Api, ipInfo.publicIP6Api)
-	log.Printf("Hosts public IPv4: %s and\nIPv6: %s", ipInfo.publicIPv4, ipInfo.publicIPv6)
+	// Get public IPv4 of host
+	ipv4Info.publicIP = getPublicIP(ipv4Info.publicIPApi)
+	log.Printf("Hosts public IPv4: %s", ipv4Info.publicIP)
 
-	// Resolve IPs of provided domain
-	ipInfo.domainIPv4, ipInfo.domainIPv6 = getDomainIP(ipInfo.domainName)
+	// Resolve IPv4 of provided domain
+	ipv4Info.domainIP = getDomainIP(ipv4Info.domainName, "A")
 
 	// Check if public and resolved IPs are the same
-	IPv4Same, IPv6Same := checkIPsMatch(ipInfo.publicIPv4, ipInfo.domainIPv4, ipInfo.publicIPv6, ipInfo.domainIPv6)
+	IPv4Same := checkIPsMatch(ipv4Info.publicIP, ipv4Info.domainIP)
 
 	if !IPv4Same {
 		log.Println("Public IPv4 address has changed. Updating DNS record")
-		UpdateDNSRecord(&ipInfo, gcpInfo, "A")
+		UpdateDNSRecord(&ipv4Info, gcpInfo, "A")
 	} else {
 		log.Println("Public IPv4 address has not changed.")
 	}
 
-	if !IPv6Same {
-		log.Println("Public IPv6 address has changed. Updating DNS record")
-		UpdateDNSRecord(&ipInfo, gcpInfo, "AAAA")
+	// Check IPV6 if enabled
+	if viper.GetBool("app.ipv6Enabled") == true {
+		log.Println("Dynamic DNS client - Starting check of public IPv6")
+
+		var ipv6Info ipData
+		ipv6Info.publicIPApi = viper.GetString("app.publicIPApi")
+		ipv6Info.domainName = viper.GetString("app.domainName")
+
+		// Get public IPv4 of host
+		ipv6Info.publicIP = getPublicIP(ipv6Info.publicIPApi)
+		log.Printf("Hosts public IPv6: %s", ipv6Info.publicIP)
+
+		// Resolve IPv6 of provided domain
+		ipv6Info.domainIP = getDomainIP(ipv6Info.domainName, "AAAA")
+
+		// Check if public and resolved IPs are the same
+		IPv6Same := checkIPsMatch(ipv6Info.publicIP, ipv6Info.domainIP)
+
+		if !IPv6Same {
+			log.Println("Public IPv6 address has changed. Updating DNS record")
+			UpdateDNSRecord(&ipv6Info, gcpInfo, "AAAA")
+		} else {
+			log.Println("Public IPv6 address has not changed.")
+		}
 	} else {
-		log.Println("Public IPv6 address has not changed.")
+		log.Println("IPv6 is disabled. Skipping...")
 	}
 
 	log.Println("Dynamic DNS client finished run. Exiting.")

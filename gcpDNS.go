@@ -19,13 +19,8 @@ func UpdateDNSRecord(ipInfo *ipData, gcpInfo *gcpData, ipType string) {
 	var newPublicIP string
 	var previousIP string
 
-	if ipType == "A" {
-		newPublicIP = ipInfo.publicIPv4
-		previousIP = ipInfo.domainIPv4
-	} else if ipType == "AAAA" {
-		newPublicIP = ipInfo.publicIPv6
-		previousIP = ipInfo.domainIPv6
-	}
+	newPublicIP = ipInfo.publicIP
+	previousIP = ipInfo.domainIP
 
 	ctx := context.Background()
 
