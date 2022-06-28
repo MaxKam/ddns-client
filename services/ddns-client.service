@@ -5,7 +5,7 @@ After=network.target
 [Service]
 Type=oneshot
 User=ddns-client
-Environment=GOOGLE_APPLICATION_CREDENTIALS=**********Path to google authentication json file***********
+Environment=GOOGLE_APPLICATION_CREDENTIALS=<Path to GCP authentication json file>
 WorkingDirectory=/opt/ddns-client/
 ExecStart=/opt/ddns-client/ddns-client-Linux-x64
 Restart=no
