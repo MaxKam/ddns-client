@@ -7,6 +7,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+const versionNumber = "v0.18"
+
 type ipData struct {
 	publicIPApi string
 	domainName  string
@@ -15,6 +17,8 @@ type ipData struct {
 }
 
 func main() {
+	log.Printf("Starting Dynamic DNS client - version %s", versionNumber)
+
 	// Config setup
 	var err error
 
