@@ -25,4 +25,5 @@ gcpDNS:
   # Name or ID of GCP DNS managed zone
   zoneName: ""
   # Time to live - amount of time for DNS record to be cached - value is in seconds and must be an integer
+  # TTL set here in config must match the TTL on dns record, otherwise the GCP API will return an error
   ttlValue: 300 
