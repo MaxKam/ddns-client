@@ -1,29 +1,38 @@
 # Creates a release whenever a new tag is pushed to the repository.
-on: 
+name: New Release
+
+on:
+  workflow_dispatch:
   push:
     tags: 
       - 'v*'
-name: New Release
+
 jobs:
-  new-release:
+  new_release:
+    name: New Release
     runs-on: ubuntu-latest
+
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
     - name: Install Go
       uses: actions/setup-go@v4
       with:
         go-version: 1.x
         check-latest: true
-    - name: Checkout code
-      uses: actions/checkout@v4
+
     - name: Build
       working-directory: ./
       run: go build -v -o ddns-client-Linux-x64
+
     - name: Create Archive
       working-directory: ./
       run: |
         cp ./services/ddns-client.service ./
         cp ./services/ddns-client.timer ./
         tar -cvzf ddns-client-Linux-x64.tar.gz ddns-client.service ddns-client.timer ddns-client-config-sample.yaml install.sh ddns-client-Linux-x64
+    
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
