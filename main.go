@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const versionNumber = "v0.18"
+const versionNumber = "v0.19"
 
 type ipData struct {
 	publicIPApi string
@@ -75,7 +75,7 @@ func main() {
 	}
 
 	// Check IPV6 if enabled
-	if viper.GetBool("app.ipv6Enabled") == true {
+	if viper.GetBool("app.ipv6Enabled") {
 		log.Println("Dynamic DNS client - Starting check of public IPv6")
 
 		var ipv6Info ipData
