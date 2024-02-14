@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-const versionNumber = "v0.18"
+const versionNumber = "v0.19"
 
 type ipData struct {
 	publicIPApi string
